@@ -15,6 +15,7 @@ playerPosition=$START_POSITION
 dieLimit=6
 optionsLimit=3
 rollDieValue=0
+rollCount=0
 
 # FUNCTION TO GET RANDOM VALUE
 function random(){
@@ -25,7 +26,9 @@ echo $randomValue
 
 # FUNCTION TO CHECK FOR OPTIONS OF GAME
 function checkOption(){
+	((rollCount++))
 	rollDieValue=$( random $dieLimit)
+	echo "Dice Rolled Result $rollDieValue"
 	local choice=$( random $optionsLimit )
 	case $choice in
 		$NO_PLAY)
@@ -51,5 +54,9 @@ do
 		playerPosition=$(($playerPosition-$rollDieValue))
 	fi
 	checkOption
+	echo "Current player Position is $playerPosition"
 done
+
+# DISPLAYING NUMBER OF TIMES DICE ROLLED
+echo "Total number of times dice rolled: $rollCount"
 
