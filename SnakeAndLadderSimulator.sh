@@ -40,13 +40,16 @@ function checkOption(){
 	esac
 }
 
-# LOOP FOR REPEATING TILL PLAYER REACHES THE WINNING POSITION
-while [[ $playerPosition -le $WIN_POSITION ]]
+# LOOP FOR REPEATING TILL PLAYER REACHES THE EXACT WINNING POSITION
+while [[ $playerPosition -ne $WIN_POSITION ]]
 do
-   if [ $playerPosition -lt $START_POSITION ]
-   then
-      playerPosition=$START_POSITION
-   fi
-   checkOption
+	if [ $playerPosition -lt $START_POSITION ]
+	then
+		playerPosition=$START_POSITION
+	elif [ $playerPosition -gt $WIN_POSITION ]
+	then
+		playerPosition=$(($playerPosition-$rollDieValue))
+	fi
+	checkOption
 done
 
