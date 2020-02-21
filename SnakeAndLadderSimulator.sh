@@ -4,6 +4,7 @@ echo "/******************************************* WELCOME TO SNAKE AND LADDER S
 
 # CONSTANTS
 START_POSITION=0
+WIN_POSITION=100
 NO_PLAY=1
 LADDER=2
 SNAKE=3
@@ -22,11 +23,9 @@ function random(){
 echo $randomValue
 }
 
-# TO GET ROLLED DICE VALUE
-rollDieValue=$( random $dieLimit)
-
 # FUNCTION TO CHECK FOR OPTIONS OF GAME
 function checkOption(){
+	rollDieValue=$( random $dieLimit)
 	local choice=$( random $optionsLimit )
 	case $choice in
 		$NO_PLAY)
@@ -41,5 +40,13 @@ function checkOption(){
 	esac
 }
 
-# FUNCTION CALL TO GET OPTIONS OF GAME
-checkOption
+# LOOP FOR REPEATING TILL PLAYER REACHES THE WINNING POSITION
+while [[ $playerPosition -le $WIN_POSITION ]]
+do
+   if [ $playerPosition -lt $START_POSITION ]
+   then
+      playerPosition=$START_POSITION
+   fi
+   checkOption
+done
+
