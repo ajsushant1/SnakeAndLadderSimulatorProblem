@@ -10,25 +10,25 @@ LADDER=2
 SNAKE=3
 
 #VARIABLES
-NumberOfPlayer=1
-playerPosition=$START_POSITION
+playerOnePosition=$START_POSITION
+playerTwoPosition=$START_POSITION
 dieLimit=6
 optionsLimit=3
-rollDieValue=0
-rollCount=0
+playerOneRollDiceCount=0
+playerTwoRollDiceCount=0
+flag=0
 
 # FUNCTION TO GET RANDOM VALUE
 function random(){
 	local input=$1
 	local randomValue=$((1+RANDOM%$input))
-echo $randomValue
+	echo $randomValue
 }
 
-# FUNCTION TO CHECK FOR OPTIONS OF GAME
-function checkOption(){
-	((rollCount++))
-	rollDieValue=$( random $dieLimit)
-	echo "Dice Rolled Result $rollDieValue"
+# FUNCTION TO PLAY SNAKE AND LADDER
+function playSnakeAndLadder(){
+	local playerPosition=$1
+	local rollDieValue=$( random $dieLimit )
 	local choice=$( random $optionsLimit )
 	case $choice in
 		$NO_PLAY)
@@ -36,27 +36,43 @@ function checkOption(){
 					;;
 		$LADDER)
 			playerPosition=$(($playerPosition+$rollDieValue))
+			if [ $playerPosition -gt $WIN_POSITION ]
+			then
+				playerPosition=$(($playerPosition-$rollDieValue))
+			fi
 					;;
 		$SNAKE)
 			playerPosition=$(($playerPosition-$rollDieValue))
+			if [ $playerPosition -lt $START_POSITION ]
+			then
+				playerPosition=$START_POSITION
+			fi
 					;;
 	esac
+	echo $playerPosition
 }
 
-# LOOP FOR REPEATING TILL PLAYER REACHES THE EXACT WINNING POSITION
-while [[ $playerPosition -ne $WIN_POSITION ]]
+# PLAYING GAME WITH TWO PLAYERS AND FINDING WINNER PLAYER
+while [[ $playerOnePosition -ne $WIN_POSITION && $playerTwoPosition -ne $WIN_POSITION ]]
 do
-	if [ $playerPosition -lt $START_POSITION ]
+	if [ $flag -eq 0 ]
 	then
-		playerPosition=$START_POSITION
-	elif [ $playerPosition -gt $WIN_POSITION ]
-	then
-		playerPosition=$(($playerPosition-$rollDieValue))
+		((playerOneRollDiceCount++))
+		playerOnePosition=$( playSnakeAndLadder $playerOnePosition )
+		flag=1
+	else
+		((playerTwoRollDiceCount++))
+		playerTwoPosition=$( playSnakeAndLadder $playerTwoPosition )
+		flag=0
 	fi
-	checkOption
-	echo "Current player Position is $playerPosition"
 done
 
-# DISPLAYING NUMBER OF TIMES DICE ROLLED
-echo "Total number of times dice rolled: $rollCount"
-
+# DISPLAYING WINNER PLAYER AND ITS TOTAL ROLL DICE COUNT
+if [ $playerOnePosition -eq $WIN_POSITION ]
+then
+	echo "Player One is Winner"
+	echo "Player One total roll dice count is $playerOneRollDiceCount"
+else
+	echo "Player Two is Winner"
+	echo "Player Two total roll dice count is $playerTwoRollDiceCount"
+fi
